@@ -153,15 +153,19 @@ def loadBlockData(substrate):
     else:
         df = pd.read_csv('blockHash.csv')
         start = int(df.iloc[-1].iloc[0])+1
-
+    
     for i in tqdm(range (start,20000)):
-        blockHash = substrate.get_block_hash(i)
-        era = (substrate.query(
-        "Staking", "ActiveEra",block_hash=blockHash
-        ))
-        blockExtrinsic = substrate.get_extrinsics(block_number=i)
-        ext = (blockExtrinsic[0]['call']['call_args'][0]['value'])
-        data.append([i,ext,blockHash,era["index"],era['start']])
+        try:
+            blockHash = substrate.get_block_hash(i)
+            era = (substrate.query(
+            "Staking", "ActiveEra",block_hash=blockHash
+            ))
+            blockExtrinsic = substrate.get_extrinsics(block_number=i)
+            ext = (blockExtrinsic[0]['call']['call_args'][0]['value'])
+            data.append([i,ext,blockHash,era["index"],era['start']])
+        except:
+            continue
+
     
     df = pd.DataFrame(data,columns=["BlockNumber","timestamp","BlockHash","EraIndex","EraStart"])
     if not os.path.exists('blockHash.csv'):
