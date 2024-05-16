@@ -154,7 +154,7 @@ def loadBlockData(substrate):
         df = pd.read_csv('blockHash.csv')
         start = int(df.iloc[-1].iloc[0])+1
     
-    for i in tqdm(range (start,20000)):
+    for i in tqdm(range (start,80000)):
         try:
             blockHash = substrate.get_block_hash(i)
             era = (substrate.query(
