@@ -69,7 +69,13 @@ def indexBlock(substrate):
 
 def main():
     substrate = createInstance()
-    indexBlock(substrate)
+    for i in range(207,208):
+        events = substrate.get_events(getBlockHash(substrate,i))
+        for event in events:
+            print('\n')
+            print(event)
+        # print(events[0]['event'][1][1]['dispatch_info']['weight']['ref_time'])
+    # indexBlock(substrate)
 
 main()
 # substrate = createInstance()

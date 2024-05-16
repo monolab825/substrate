@@ -175,6 +175,8 @@ def loadBlockData(substrate):
 
 def main():
     substrate = createInstance()
+    # header = substrate.get_block(block_number=208)
+    # print(header)
     loadBlockData(substrate)
     data = [
     4177, 8497, 9773, 14092, 18411, 22730, 27050, 28358, 32677, 36997,
