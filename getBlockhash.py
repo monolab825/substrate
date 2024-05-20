@@ -195,14 +195,14 @@ def loadBData(substrate,blockNumber):
             ))
             # blockExtrinsic = substrate.get_extrinsics(block_number=i)
             # ext = (blockExtrinsic[0]['call']['call_args'][0]['value'])
-            eraPoints = substrate.query("Staking","ErasRewardPoints",[int(str(1))],block_hash = str(blockHash))
-            data.append([i,1,blockHash,era["index"],era['start'],eraPoints['total']])
+            eraPoints = substrate.query("Staking","ErasRewardPoints",[int(str(era["index"]))],block_hash = str(blockHash))
+            data.append([i,blockHash,str(era["index"]),int(era['start']),int(eraPoints['total'])])
             
         except:
             continue
 
     
-    df = pd.DataFrame(data,columns=["BlockNumber","timestamp","BlockHash","EraIndex","EraStart","EraPoints"])
+    df = pd.DataFrame(data,columns=["BlockNumber","BlockHash","EraIndex","EraStart","EraPoints"])
     if not os.path.exists('blockHash.csv'):
         df.to_csv('blockHash.csv',index=False)
     else:
