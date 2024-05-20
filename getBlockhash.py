@@ -188,20 +188,16 @@ def loadBData(substrate,blockNumber):
         start = int(df.iloc[-1].iloc[0])+1
     
     for i in tqdm(range (start,blockNumber)):
-        try:
-            blockHash = substrate.get_block_hash(i)
-            era = (substrate.query(
-            "Staking", "ActiveEra",block_hash=blockHash
-            ))
-            # blockExtrinsic = substrate.get_extrinsics(block_number=i)
-            # ext = (blockExtrinsic[0]['call']['call_args'][0]['value'])
-            eraPoints = substrate.query("Staking","ErasRewardPoints",[int(str(era["index"]))],block_hash = str(blockHash))
-            data.append([i,blockHash,str(era["index"]),int(era['start']),int(eraPoints['total'])])
+        
+        blockHash = substrate.get_block_hash(i)
+        era = (substrate.query(
+        "Staking", "ActiveEra",block_hash=blockHash
+        ))
+        # blockExtrinsic = substrate.get_extrinsics(block_number=i)
+        # ext = (blockExtrinsic[0]['call']['call_args'][0]['value'])
+        eraPoints = substrate.query("Staking","ErasRewardPoints",[int(str(era["index"]))],block_hash = str(blockHash))
+        data.append([i,blockHash,str(era["index"]),int(str(era['start'])),int(str(eraPoints['total']))])
             
-        except:
-            continue
-
-    
     df = pd.DataFrame(data,columns=["BlockNumber","BlockHash","EraIndex","EraStart","EraPoints"])
     if not os.path.exists('blockHash.csv'):
         df.to_csv('blockHash.csv',index=False)
@@ -214,9 +210,9 @@ def main():
     # header = substrate.get_block(block_number=208)
     # print(header)
     for i in range (1,50):
-        loadBData(substrate,i*10)
-        print("Data loaded for ", i*10)
-        break
+        loadBData(substrate,i*4300)
+        print("Data loaded for ", i*4300)
+        
     
 
     data = [
@@ -244,10 +240,11 @@ main()
 
 
 # substrate = createInstance()
-# blockHash = substrate.get_block_hash(4177)
+# blockHash = substrate.get_block_hash(2)
 # era = (substrate.query(
 #             "Staking", "ActiveEra",block_hash=blockHash
 #             ))
+# print(era)
 # eraPoints = substrate.query("Staking","ErasRewardPoints",[int(str(era['index']))],block_hash = str(blockHash))
 # print(eraPoints)
 # getBlocks(substrate,39)
