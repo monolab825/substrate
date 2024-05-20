@@ -207,6 +207,7 @@ def loadBData(substrate,blockNumber):
         df.to_csv('blockHash.csv',index=False)
     else:
         df.to_csv('blockHash.csv',mode='a',index=False, header=False)
+        print(df.tail())
 
 def main():
     substrate = createInstance()
@@ -214,7 +215,8 @@ def main():
     # print(header)
     for i in range (1,50):
         loadBData(substrate,i*4320)
-        print("Data loaded for ", i*4320)
+        print("Data loaded for ", i*10)
+        break
     
 
     data = [
