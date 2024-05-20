@@ -154,7 +154,7 @@ def loadBlockData(substrate):
         df = pd.read_csv('blockHash.csv')
         start = int(df.iloc[-1].iloc[0])+1
     
-    for i in tqdm(range (start,80000)):
+    for i in tqdm(range (4177,8499)):
         try:
             blockHash = substrate.get_block_hash(i)
             era = (substrate.query(
@@ -162,12 +162,47 @@ def loadBlockData(substrate):
             ))
             blockExtrinsic = substrate.get_extrinsics(block_number=i)
             ext = (blockExtrinsic[0]['call']['call_args'][0]['value'])
-            data.append([i,ext,blockHash,era["index"],era['start']])
+            eraPoints = substrate.query("Staking","ErasRewardPoints",[int(str(era['index']))],block_hash = str(blockHash))
+            data.append([i,ext,blockHash,era["index"],era['start'],eraPoints['total']])
+            
         except:
             continue
 
     
-    df = pd.DataFrame(data,columns=["BlockNumber","timestamp","BlockHash","EraIndex","EraStart"])
+    df = pd.DataFrame(data,columns=["BlockNumber","timestamp","BlockHash","EraIndex","EraStart","EraPoints"])
+    if not os.path.exists('blockHash.csv'):
+        df.to_csv('blockHash.csv',index=False)
+    else:
+        df.to_csv('blockHash.csv',mode='a',index=False, header=False)
+
+
+def loadBData(substrate,blockNumber):
+    
+    data = []
+    
+
+    if not os.path.exists('blockHash.csv'):
+        start=1
+    else:
+        df = pd.read_csv('blockHash.csv')
+        start = int(df.iloc[-1].iloc[0])+1
+    
+    for i in tqdm(range (start,blockNumber)):
+        try:
+            blockHash = substrate.get_block_hash(i)
+            era = (substrate.query(
+            "Staking", "ActiveEra",block_hash=blockHash
+            ))
+            # blockExtrinsic = substrate.get_extrinsics(block_number=i)
+            # ext = (blockExtrinsic[0]['call']['call_args'][0]['value'])
+            eraPoints = substrate.query("Staking","ErasRewardPoints",[int(str(1))],block_hash = str(blockHash))
+            data.append([i,1,blockHash,era["index"],era['start'],eraPoints['total']])
+            
+        except:
+            continue
+
+    
+    df = pd.DataFrame(data,columns=["BlockNumber","timestamp","BlockHash","EraIndex","EraStart","EraPoints"])
     if not os.path.exists('blockHash.csv'):
         df.to_csv('blockHash.csv',index=False)
     else:
@@ -177,7 +212,11 @@ def main():
     substrate = createInstance()
     # header = substrate.get_block(block_number=208)
     # print(header)
-    loadBlockData(substrate)
+    for i in range (1,50):
+        loadBData(substrate,i*5000)
+        print("Data loaded for ", i*5000)
+    
+
     data = [
     4177, 8497, 9773, 14092, 18411, 22730, 27050, 28358, 32677, 36997,
     41317, 45636, 49954, 54274, 58455, 62775, 67065, 71268, 75588, 79855,
@@ -203,6 +242,12 @@ main()
 
 
 # substrate = createInstance()
+# blockHash = substrate.get_block_hash(4177)
+# era = (substrate.query(
+#             "Staking", "ActiveEra",block_hash=blockHash
+#             ))
+# eraPoints = substrate.query("Staking","ErasRewardPoints",[int(str(era['index']))],block_hash = str(blockHash))
+# print(eraPoints)
 # getBlocks(substrate,39)
 # print(substrate.get_metadata_call_function("Balances","transfer_keep_alive","0x6a97388f03211c5903d99b98ad096d80864d2ff95a66e119dbc77d09440d03de"))
 # address = "12D3KooWKaQEU4PRVmrcqEh6f7xW7PwP4YkbM7pTQDRND9ZL6Pnn"
